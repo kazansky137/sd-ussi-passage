@@ -11,7 +11,7 @@ FOURNISSEURS = [1, 2, 3, 8]
 
 def _dn_process(dname, record):
     _dn = str(dname)
-    if _dn.startswith("employeenumber=", 0, 16):
+    if _dn.lower().startswith("employeenumber=", 0, 16):
         uid = record["uid"][0]
         fgs = record["employeeNumber"][0]
 
@@ -33,7 +33,8 @@ def _dn_process(dname, record):
             if _nfour > 0:
                 _h = hashlib.md5(mail.encode("ascii")).hexdigest()
                 for _pass in _upass:
-                    print("u" + _h[4:12], mail, uid, fgs, _pass, _fours)
+                    # print("u" + _h[4:12], mail, uid, fgs, _pass, _fours)
+                    print(mail.lower(), _pass)
 
 
 if __name__ == "__main__":
