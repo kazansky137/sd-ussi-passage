@@ -8,6 +8,8 @@ from ldif import LDIFParser
 
 FOURNISSEURS = [1, 2, 3, 8]
 
+PASS_SERVICE = "{SSHA}4iM5QyVhHf4x+pNHLVxMs9YMqEItP9dHskJEcQ=="
+
 
 def _dn_process(dname, record):
     _dn = str(dname)
@@ -33,6 +35,8 @@ def _dn_process(dname, record):
             if _nfour > 0:
                 _h = hashlib.md5(mail.encode("ascii")).hexdigest()
                 for _pass in _upass:
+                    if _pass == PASS_SERVICE:
+                        return
                     # print("u" + _h[4:12], mail, uid, fgs, _pass, _fours)
                     print(mail.lower(), _pass)
 
