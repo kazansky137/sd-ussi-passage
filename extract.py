@@ -4,11 +4,17 @@
 
 import sys
 import hashlib
+from config import Config
+from params import Params
 from ldif import LDIFParser
 
-FOURNISSEURS = [1, 2, 3, 8]
-
 PASS_SERVICE = "{SSHA}4iM5QyVhHf4x+pNHLVxMs9YMqEItP9dHskJEcQ=="
+
+config = Config("ldap.conf")
+params = Params(config)
+params.add_argument("--fours")
+params.parse()
+FOURNISSEURS  = params.range('fours')
 
 
 def _dn_process(dname, record):

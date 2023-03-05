@@ -1,3 +1,4 @@
+-e git+ssh://git@github.com/kazansky137/sd-library.git@e8b080cbbd7e2b98436203979023153c5c69cce4#egg=sd_library&subdirectory=library
 astroid==2.14.2
 attrs==22.2.0
 dill==0.3.6
