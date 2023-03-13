@@ -12,9 +12,9 @@ PASS_SERVICE = "{SSHA}4iM5QyVhHf4x+pNHLVxMs9YMqEItP9dHskJEcQ=="
 
 config = Config("ldap.conf")
 params = Params(config)
-params.add_argument("--fours")
+params.add_argument("--four")
 params.parse()
-FOURNISSEURS  = params.range('fours')
+FOURNISSEURS = params.range('four')
 
 
 def _dn_process(dname, record):
@@ -23,28 +23,31 @@ def _dn_process(dname, record):
         uid = record["uid"][0]
         fgs = record["employeeNumber"][0]
 
-        try:  # "mail" attribute must exists
+        if "UCLInactif" in record:
+            return
+
+        try:  # "mail" "userpassword" attributes must exists
             mail = record["mail"][0]
+            _upass = record["userPassword"]
         except KeyError:
             return
 
-        if "UCLInactif" not in record:
-            try:
-                _upass = record["userPassword"]
-            except KeyError:
+        _fours = sorted([int(_f) for _f in record["UCLFournisseur"]])
+
+        _nfour = 0
+        for four in _fours:
+            if four in FOURNISSEURS:
+                _nfour = _nfour + 1
+
+        if _nfour == 0:
+            return
+
+        _h = hashlib.md5(mail.encode("ascii")).hexdigest()
+        for _pass in _upass:
+            if _pass == PASS_SERVICE:
                 return
-            _fours = sorted([int(_f) for _f in record["UCLFournisseur"]])
-            _nfour = 0
-            for four in _fours:
-                if four in FOURNISSEURS:
-                    _nfour = _nfour + 1
-            if _nfour > 0:
-                _h = hashlib.md5(mail.encode("ascii")).hexdigest()
-                for _pass in _upass:
-                    if _pass == PASS_SERVICE:
-                        return
-                    # print("u" + _h[4:12], mail, uid, fgs, _pass, _fours)
-                    print(mail.lower(), _pass)
+            # print("u" + _h[4:12], mail, uid, fgs, _pass, _fours)
+            print(mail.lower(), _pass)
 
 
 if __name__ == "__main__":
