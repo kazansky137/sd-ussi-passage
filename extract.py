@@ -12,9 +12,12 @@ PASS_SERVICE = "{SSHA}4iM5QyVhHf4x+pNHLVxMs9YMqEItP9dHskJEcQ=="
 
 config = Config("ldap.conf")
 params = Params(config)
-params.add_argument("--four")
+params.add_argument("--four", help="Fournisseur(s) LDAP")
+params.add_argument("--lidm", help="Ligne(s) grille IDM")
 params.parse()
-FOURNISSEURS = params.range('four')
+
+FOURNISSEURS = params.range('four') if params.exists('four') else []
+UCLSTATUSIDS = params.range('lidm') if params.exists('lidm') else []
 
 
 def _dn_process(dname, record):
@@ -32,7 +35,15 @@ def _dn_process(dname, record):
         except KeyError:
             return
 
-        _fours = sorted([int(_f) for _f in record["UCLFournisseur"]])
+        try:
+            _fours = sorted([int(_f) for _f in record["UCLFournisseur"]])
+        except KeyError:
+            _fours = []
+
+        try:
+            _lidms = sorted([int(_l) for _l in record["uclstatusid"]])
+        except KeyError:
+            _lidms = []
 
         _nfour = 0
         for four in _fours:
@@ -46,8 +57,8 @@ def _dn_process(dname, record):
         for _pass in _upass:
             if _pass == PASS_SERVICE:
                 return
-            # print("u" + _h[4:12], mail, uid, fgs, _pass, _fours)
-            print(mail.lower(), _pass)
+            print("u" + _h[4:12], mail, uid, fgs, _pass, _fours, _lidms)
+            # print(mail.lower(), _pass)
 
 
 if __name__ == "__main__":
@@ -57,4 +68,4 @@ if __name__ == "__main__":
         for _dn, _rec in parser.parse():
             _dn_process(_dn, _rec)
 
-sys.exit(0)
+    sys.exit(0)
